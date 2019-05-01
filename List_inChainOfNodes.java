@@ -161,6 +161,8 @@ public class List_inChainOfNodes{
         Object saveForReturn = ax.getCargo();
         beforeOld.setNextNode(afterOld);
         afterOld.setPreviousNode(beforeOld);
+        ax.setNextNode(ax);
+        ax.setPreviousNode(ax);
         return saveForReturn;
     }
 }
