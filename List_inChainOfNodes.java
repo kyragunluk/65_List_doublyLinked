@@ -10,7 +10,9 @@ public class List_inChainOfNodes{
       Construct an empty list
      */
     public List_inChainOfNodes() {
-        headSentinel = new Node( null, null);
+        headSentinel = new Node( null, null, null );
+        headSentinel.setNextNode(headSentinel);
+        headSentinel.setPreviousNode(headSentinel);
     }
 
     /**
@@ -24,7 +26,7 @@ public class List_inChainOfNodes{
     // recursively-called helper
     private int size( Node startingAt) {
         Node next = startingAt.getNextNode();
-        if( next == null) return 0;
+        if( next == null || next == headSentinel) return 0;
         else return 1+ size( next);
     }
 
@@ -56,14 +58,11 @@ public class List_inChainOfNodes{
      */
     public String toString() {
         String stringRep = "tail-first [";
-        if (size() != 0){
-            for( Node node = getNode(size()-1)
-               ; node != null
-               && node.getPreviousNode() != null
-               ; node = node.getPreviousNode()
-               )
-                stringRep += node.getCargo() + "`";
-        }
+        for( Node node = headSentinel.getPreviousNode()
+           ; node != headSentinel
+           ; node = node.getPreviousNode()
+           )
+           stringRep += node.getCargo() + "`";
         return stringRep + "]";
     }
 
@@ -75,7 +74,7 @@ public class List_inChainOfNodes{
      */
      public boolean addAsHead( Object val) {
         headSentinel.setNextNode(
-            new Node( val, headSentinel.getNextNode()));
+            new Node( val, headSentinel.getNextNode(),headSentinel));
         return true;
      }
 
@@ -142,7 +141,7 @@ public class List_inChainOfNodes{
         Node afterNew = beforeNew.getNextNode();
         Node newNode = new Node (value,afterNew,beforeNew);
         beforeNew.setNextNode(newNode);
-        if (afterNew != null) afterNew.setPreviousNode(newNode);
+        afterNew.setPreviousNode(newNode);
         return true;
     }
 
@@ -156,12 +155,12 @@ public class List_inChainOfNodes{
       @return the value that was removed from the list
      */
     public Object remove( int index) {
-        Node before = getNodeBefore( index);
-        Node ax = before.getNextNode();
+        Node beforeOld = getNodeBefore( index);
+        Node ax = beforeOld.getNextNode();
+        Node afterOld = ax.getNextNode();
         Object saveForReturn = ax.getCargo();
-        before.setNextNode( ax.getNextNode());
-        if (ax.getNextNode()!= null)
-            ax.getNextNode().setPreviousNode( ax.getPreviousNode());
+        beforeOld.setNextNode(afterOld);
+        afterOld.setPreviousNode(beforeOld);
         return saveForReturn;
     }
 }
